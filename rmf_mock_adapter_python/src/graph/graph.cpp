@@ -116,8 +116,7 @@ void bind_graph(py::module &m) {
       .def(py::init<>())
       .def("add_waypoint", &Graph::add_waypoint,
            py::arg("map_name"),
-           py::arg("location"),
-           py::arg("is_holding_point") = false)
+           py::arg("location"))
       .def("get_waypoint", py::overload_cast<std::size_t>(&Graph::get_waypoint))
       .def("get_waypoint", py::overload_cast<std::size_t>(
           &Graph::get_waypoint, py::const_))

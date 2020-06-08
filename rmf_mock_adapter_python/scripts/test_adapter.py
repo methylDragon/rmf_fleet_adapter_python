@@ -80,15 +80,15 @@ def main():
     """
 
     test_graph.add_waypoint(map_name, [0.0, -10.0])  # 0
-    test_graph.add_waypoint(map_name, [0.0, -5.0], True)  # 1
-    test_graph.add_waypoint(map_name, [5.0, -5.0], True)  # 2
+    test_graph.add_waypoint(map_name, [0.0, -5.0])  # 1
+    test_graph.add_waypoint(map_name, [5.0, -5.0])  # 2
     test_graph.add_waypoint(map_name, [-10.0, 0])  # 3
-    test_graph.add_waypoint(map_name, [-5.0, 0.0], True)  # 4
+    test_graph.add_waypoint(map_name, [-5.0, 0.0])  # 4
     test_graph.add_waypoint(map_name, [0.0, 0.0])  # 5
     test_graph.add_waypoint(map_name, [5.0, 0.0])  # 6
     test_graph.add_waypoint(map_name, [10.0, 0.0])  # 7
-    test_graph.add_waypoint(map_name, [0.0, 5.0], True)  # 8
-    test_graph.add_waypoint(map_name, [5.0, 5.0], True)  # 9
+    test_graph.add_waypoint(map_name, [0.0, 5.0])  # 8
+    test_graph.add_waypoint(map_name, [5.0, 5.0])  # 9
     test_graph.add_waypoint(map_name, [0.0, 10.0])  # 10
 
     lanes = [[0, 1],
