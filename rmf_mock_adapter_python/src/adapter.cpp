@@ -20,7 +20,7 @@ void bind_shapes(py::module &);
 void bind_vehicletraits(py::module &);
 void bind_plan(py::module &);
 
-PYBIND11_MODULE(rmf_adapter, m) {
+PYBIND11_MODULE(rmf_mock_adapter, m) {
     bind_types(m);
     bind_tests(m);
     bind_graph(m);

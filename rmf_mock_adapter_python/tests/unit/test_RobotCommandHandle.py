@@ -1,4 +1,4 @@
-import rmf_adapter as adpt
+import rmf_mock_adapter as adpt
 from typing import Callable
 
 

@@ -47,7 +47,7 @@ class CMakeBuild(build_ext):
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
-        cfg = 'Debug'  # if self.debug else 'Release'
+        cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
 
         if platform.system() == "Windows":
@@ -77,8 +77,8 @@ class CMakeBuild(build_ext):
 setup(
     name=package_name,
     version=__version__,
-    packages=['scripts'], #['wrap_add_test'],
-    #package_dir={'wrap_add_test': 'scripts/wrap_add_test'},
+    packages=['rmf_mock_adapter_python'],
+    package_dir={'rmf_mock_adapter_python': 'scripts/rmf_mock_adapter_python'},
     author='methylDragon',
     author_email='methylDragon@gmail.com',
     url='',
@@ -89,7 +89,7 @@ setup(
     cmdclass={'build_ext': CMakeBuild},
     zip_safe=False,
     entry_points={'console_scripts': [
-        'test_adapter = scripts.test_adapter:main'
+        'test_adapter = rmf_mock_adapter_python.test_adapter:main'
     ]},
     license='Apache License, Version 2.0',
     install_requires=['setuptools'],

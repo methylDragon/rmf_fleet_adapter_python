@@ -26,7 +26,7 @@ include_directories(include ${rmf_mock_adapter_INCLUDE_DIRS})
 # You must have the pybind_ament package in your workspace somewhere!
 find_package(pybind11 REQUIRED)
 
-pybind11_add_module(rmf_adapter
+pybind11_add_module(rmf_mock_adapter
   src/adapter.cpp
   src/tests.cpp
   src/types/types.cpp
@@ -36,7 +36,7 @@ pybind11_add_module(rmf_adapter
   src/planner/planner.cpp
   src/vehicletraits/vehicletraits.cpp
 )
-target_link_libraries(rmf_adapter PRIVATE
+target_link_libraries(rmf_mock_adapter PRIVATE
   rmf_mock_adapter::rmf_mock_adapter)
 
 # NO AMENT PACKAGE! That's settled by setup.py
