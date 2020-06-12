@@ -102,6 +102,7 @@ PYBIND11_MODULE(rmf_adapter, m) {
     // ADAPTER =================================================================
     // Light wrappers
     py::class_<rclcpp::NodeOptions>(m, "NodeOptions");
+    py::class_<rclcpp::Node, std::shared_ptr<rclcpp::Node> >(m, "Node");
 
     // Python rclcpp init call
     m.def("init_rclcpp", [](){ rclcpp::init(0, nullptr); });
@@ -118,9 +119,10 @@ PYBIND11_MODULE(rmf_adapter, m) {
              py::arg("fleet_name"),
              py::arg("traits"),
              py::arg("navigation_graph"))
-        // .def_property_readonly("Node")  // Needless for Python API currently
-        // .def_property_readonly("ConstNode")
-        // .def("request_delivery")  // Same for this
+        .def_property_readonly("node",
+                               py::overload_cast<> \
+                                  (&agv::Adapter::node))
+        // .def("request_delivery")  // Needless in Python API
         .def("start", &agv::Adapter::start)
         .def("stop", &agv::Adapter::stop);
 
@@ -137,9 +139,10 @@ PYBIND11_MODULE(rmf_adapter, m) {
              py::arg("fleet_name"),
              py::arg("traits"),
              py::arg("navigation_graph"))
-        // .def_property_readonly("Node")  // Needless for Python API currently
-        // .def_property_readonly("ConstNode")
-        // .def("request_delivery")  // Same for this
+        .def_property_readonly("node",
+                               py::overload_cast<> \
+                                  (&agv::test::MockAdapter::node))
+        // .def("request_delivery")  // Needless in Python API
         .def("start", &agv::test::MockAdapter::start)
         .def("stop", &agv::test::MockAdapter::stop);
 }
