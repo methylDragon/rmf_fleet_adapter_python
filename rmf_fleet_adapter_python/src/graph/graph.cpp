@@ -46,7 +46,17 @@ void bind_graph(py::module &m) {
       .def_property("holding_point",
                     &Graph::Waypoint::is_holding_point,
                     &Graph::Waypoint::set_holding_point)
-      .def_property_readonly("index", &Graph::Waypoint::index);
+      .def("set_holding_point", &Graph::Waypoint::set_holding_point)
+      .def_property("passthrough_point",
+                    &Graph::Waypoint::is_passthrough_point,
+                    &Graph::Waypoint::set_passthrough_point)
+      .def("set_passthrough_point", &Graph::Waypoint::set_passthrough_point)
+      .def_property("parking_spot",
+                    &Graph::Waypoint::is_parking_spot,
+                    &Graph::Waypoint::set_parking_spot)
+      .def("set_parking_spot", &Graph::Waypoint::set_parking_spot)
+      .def_property_readonly("index", &Graph::Waypoint::index)
+      .def_property_readonly("waypoint_name", &Graph::Waypoint::name);
 
   // ORIENTATION_CONSTRAINT ====================================================
   py::class_<OrientationConstraint,
@@ -114,14 +124,33 @@ void bind_graph(py::module &m) {
   // GRAPH =====================================================================
   py::class_<Graph>(m_graph, "Graph")
       .def(py::init<>())
+
+      // Waypoints
       .def("add_waypoint", &Graph::add_waypoint,
            py::arg("map_name"),
-           py::arg("location"))
-      .def("get_waypoint", py::overload_cast<std::size_t>(&Graph::get_waypoint))
+           py::arg("location"),
+           py::return_value_policy::reference_internal)
+      .def("get_waypoint",
+           py::overload_cast<std::size_t>(&Graph::get_waypoint),
+           py::return_value_policy::reference_internal)
       .def("get_waypoint", py::overload_cast<std::size_t>(
-          &Graph::get_waypoint, py::const_))
-      .def("num_waypoints", &Graph::num_waypoints)
+          &Graph::get_waypoint, py::const_),
+          py::return_value_policy::reference_internal)
+      .def("find_waypoint", py::overload_cast<const std::string&> \
+          (&Graph::find_waypoint),
+          py::return_value_policy::reference_internal)
+      .def("find_waypoint", py::overload_cast<const std::string&> \
+          (&Graph::find_waypoint, py::const_),
+          py::return_value_policy::reference_internal)
       .def_property_readonly("num_waypoints", &Graph::num_waypoints)
+
+      // Keys
+      .def("add_key", &Graph::add_key)
+      .def("remove_key", &Graph::remove_key)
+      .def("set_key", &Graph::set_key)
+      .def_property_readonly("keys", &Graph::keys)
+
+      // Lanes
       .def("add_lane",
            &Graph::add_lane,
            py::call_guard<py::scoped_ostream_redirect,
@@ -137,6 +166,5 @@ void bind_graph(py::module &m) {
       .def("get_lane", py::overload_cast<std::size_t>(&Graph::get_lane))
       .def("get_lane", py::overload_cast<std::size_t>(
           &Graph::get_lane, py::const_))
-      .def("num_lanes", &Graph::num_lanes)
       .def_property_readonly("num_lanes", &Graph::num_lanes);
 }
