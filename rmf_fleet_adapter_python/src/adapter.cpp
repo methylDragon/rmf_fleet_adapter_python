@@ -18,7 +18,7 @@ void bind_graph(py::module &);
 void bind_shapes(py::module &);
 void bind_vehicletraits(py::module &);
 void bind_plan(py::module &);
-// void bind_tests(py::module &);
+void bind_tests(py::module &);
 
 PYBIND11_MODULE(rmf_adapter, m) {
     bind_types(m);
@@ -26,13 +26,13 @@ PYBIND11_MODULE(rmf_adapter, m) {
     bind_shapes(m);
     bind_vehicletraits(m);
     bind_plan(m);
-    // bind_tests(m);
+    bind_tests(m);
 
     // ROBOTCOMMAND HANDLE =====================================================
     // Abstract class
     py::class_<agv::RobotCommandHandle, PyRobotCommandHandle,
                std::shared_ptr<agv::RobotCommandHandle> > \
-      (m, "RobotCommandHandle")  // , py::dynamic_attr())
+      (m, "RobotCommandHandle", py::dynamic_attr())
         .def(py::init<>())
         .def("follow_new_path", &agv::RobotCommandHandle::follow_new_path)
         .def("stop", &agv::RobotCommandHandle::stop)
@@ -99,15 +99,20 @@ PYBIND11_MODULE(rmf_adapter, m) {
              py::arg("handle_cb"));
 
     // ADAPTER =================================================================
-    // Light wrapper
+    // Light wrappers
     py::class_<rclcpp::NodeOptions>(m, "NodeOptions");
+
+    // Python rclcpp init call
+    m.def("init_rclcpp", [](){ rclcpp::init(0, nullptr); });
 
     py::class_<agv::Adapter, std::shared_ptr<agv::Adapter> >(m, "Adapter")
         // .def(py::init<>())  // Private constructor
         .def_static("make", &agv::Adapter::make,
              py::arg("node_name"),
              py::arg("node_options") = rclcpp::NodeOptions(),
-             py::arg("wait_time") = std::chrono::minutes(1))
+             py::arg("wait_time") = std::chrono::minutes(1),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
         .def("add_fleet", &agv::Adapter::add_fleet,
              py::arg("fleet_name"),
              py::arg("traits"),
