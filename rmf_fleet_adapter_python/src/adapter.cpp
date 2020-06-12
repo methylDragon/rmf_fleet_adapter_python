@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "rmf_fleet_adapter/agv/Adapter.hpp"
+#include "rmf_fleet_adapter/agv/test/MockAdapter.hpp"
 #include "rmf_fleet_adapter_python/PyRobotCommandHandle.hpp"
 
 namespace py = pybind11;
@@ -119,6 +120,26 @@ PYBIND11_MODULE(rmf_adapter, m) {
              py::arg("navigation_graph"))
         // .def_property_readonly("Node")  // Needless for Python API currently
         // .def_property_readonly("ConstNode")
+        // .def("request_delivery")  // Same for this
         .def("start", &agv::Adapter::start)
         .def("stop", &agv::Adapter::stop);
+
+    py::class_<agv::test::MockAdapter,
+               std::shared_ptr<agv::test::MockAdapter> > \
+        (m, "MockAdapter")
+        .def(py::init<const std::string&,
+                      const rclcpp::NodeOptions&>(),
+             py::arg("node_name"),
+             py::arg("node_options") = rclcpp::NodeOptions(),
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
+        .def("add_fleet", &agv::test::MockAdapter::add_fleet,
+             py::arg("fleet_name"),
+             py::arg("traits"),
+             py::arg("navigation_graph"))
+        // .def_property_readonly("Node")  // Needless for Python API currently
+        // .def_property_readonly("ConstNode")
+        // .def("request_delivery")  // Same for this
+        .def("start", &agv::test::MockAdapter::start)
+        .def("stop", &agv::test::MockAdapter::stop);
 }
