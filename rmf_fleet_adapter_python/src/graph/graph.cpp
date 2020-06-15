@@ -155,6 +155,27 @@ void bind_graph(py::module &m) {
            &Graph::add_lane,
            py::call_guard<py::scoped_ostream_redirect,
                           py::scoped_estream_redirect>())
+      .def("add_dock_lane",
+           [&](Graph &self,
+               const std::size_t w0,
+               const std::size_t w1,
+               std::string dock_name,
+               int seconds) {
+                 self.add_lane(
+                   {
+                     w0,
+                     Lane::Event::make(
+                       Lane::Dock(dock_name,
+                                  std::chrono::seconds(seconds)))
+                   },
+                   w1);
+                 self.add_lane(w1, w0);},
+           py::arg("w0"),
+           py::arg("w1"),
+           py::arg("dock_name"),
+           py::arg("dock_seconds") = 10,
+           py::call_guard<py::scoped_ostream_redirect,
+                          py::scoped_estream_redirect>())
       .def("add_bidir_lane",
            [&](Graph &self,
                const std::size_t w0,

@@ -97,7 +97,9 @@ PYBIND11_MODULE(rmf_adapter, m) {
              py::arg("name"),
              py::arg("profile"),
              py::arg("start"),
-             py::arg("handle_cb"));
+             py::arg("handle_cb"))
+        .def("accept_delivery_requests",
+             &agv::FleetUpdateHandle::accept_delivery_requests);
 
     // ADAPTER =================================================================
     // Light wrappers

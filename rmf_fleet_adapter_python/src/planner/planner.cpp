@@ -34,8 +34,10 @@ void bind_plan(py::module &m) {
            py::arg("initial_time"),
            py::arg("initial_waypoint"),
            py::arg("initial_orientation"),
-           py::arg("location") = rmf_utils::nullopt,
-           py::arg("initial_lane") = rmf_utils::nullopt)
+           py::arg("location") = rmf_utils::optional<Eigen::Vector2d> \
+               (rmf_utils::nullopt),
+           py::arg("initial_lane") = rmf_utils::optional<std::size_t> \
+               (rmf_utils::nullopt))
       .def_property("time",
                     py::overload_cast<>(&Start::time, py::const_),
                     py::overload_cast<rmf_traffic::Time>(&Start::time))
@@ -69,8 +71,9 @@ void bind_plan(py::module &m) {
       // Private constructor
       .def_property_readonly("position",
                              &Plan::Waypoint::position)
-      .def_property_readonly("time",
-                             &Plan::Waypoint::time)
+      .def_property("time",
+                    py::overload_cast<>(&Plan::Waypoint::time, py::const_),
+                    py::overload_cast<rmf_traffic::Time>(&Plan::Waypoint::time))
       .def_property_readonly("graph_index",
                              &Plan::Waypoint::graph_index)
       .def_property_readonly("event",
