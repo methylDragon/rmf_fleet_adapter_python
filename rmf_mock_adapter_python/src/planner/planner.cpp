@@ -8,6 +8,8 @@
 
 namespace py = pybind11;
 
+// void bind_types(py::module &);
+
 using Plan = rmf_traffic::agv::Plan;
 using Planner = rmf_traffic::agv::Planner;
 
@@ -19,7 +21,38 @@ using Configuration = Planner::Configuration;
 using Result = Planner::Result;
 
 void bind_plan(py::module &m) {
+  // bind_types(m);  // Bound in parent module!
   auto m_plan = m.def_submodule("plan");
+
+  // PLANNER ===================================================================
+  py::class_<Start>(m_plan, "Start")
+      .def(py::init<rmf_traffic::Time,
+                    std::size_t,
+                    double,
+                    rmf_utils::optional<Eigen::Vector2d>,
+                    rmf_utils::optional<std::size_t> >(),
+           py::arg("initial_time"),
+           py::arg("initial_waypoint"),
+           py::arg("initial_orientation"),
+           py::arg("location") = rmf_utils::nullopt,
+           py::arg("initial_lane") = rmf_utils::nullopt)
+      .def_property("time",
+                    py::overload_cast<>(&Start::time, py::const_),
+                    py::overload_cast<rmf_traffic::Time>(&Start::time))
+      .def_property("waypoint",
+                    py::overload_cast<>(&Start::waypoint, py::const_),
+                    py::overload_cast<std::size_t>(&Start::waypoint))
+      .def_property("orientation",
+                    py::overload_cast<>(&Start::orientation, py::const_),
+                    py::overload_cast<double>(&Start::orientation))
+      .def_property("location",
+                    py::overload_cast<>(&Start::location, py::const_),
+                    py::overload_cast<rmf_utils::optional<Eigen::Vector2d> > \
+                        (&Start::location))
+      .def_property("lane",
+                    py::overload_cast<>(&Start::lane, py::const_),
+                    py::overload_cast<rmf_utils::optional<std::size_t> > \
+                        (&Start::lane));
 
   // PLAN ======================================================================
   py::class_<Plan>(m_plan, "Plan")
@@ -36,8 +69,9 @@ void bind_plan(py::module &m) {
       // Private constructor
       .def_property_readonly("position",
                              &Plan::Waypoint::position)
-      .def_property_readonly("time",
-                             &Plan::Waypoint::time)
+      .def_property("time",
+                    py::overload_cast<>(&Plan::Waypoint::time, py::const_),
+                    py::overload_cast<rmf_traffic::Time>(&Plan::Waypoint::time))
       .def_property_readonly("graph_index",
                              &Plan::Waypoint::graph_index)
       .def_property_readonly("event",

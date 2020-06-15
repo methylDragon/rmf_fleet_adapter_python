@@ -47,4 +47,6 @@ void bind_types(py::module &m) {
                              &rmf_utils::optional<Eigen::Vector2d>::has_value)
       .def_property_readonly("value", py::overload_cast<> \
           (&rmf_utils::optional<Eigen::Vector2d>::value));
+
+  py::class_<rmf_utils::nullopt_t>(m_type, "NullOptional");
 }
