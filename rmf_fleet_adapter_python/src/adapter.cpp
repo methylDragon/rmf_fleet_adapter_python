@@ -40,7 +40,8 @@ PYBIND11_MODULE(rmf_adapter, m) {
         .def("dock", &agv::RobotCommandHandle::dock);
 
     // ROBOTUPDATE HANDLE ======================================================
-    py::class_<agv::RobotUpdateHandle> \
+    py::class_<agv::RobotUpdateHandle,
+               std::shared_ptr<agv::RobotUpdateHandle> > \
       (m, "RobotUpdateHandle")
         // Private constructor: Only to be constructed via FleetUpdateHandle!
         .def("interrupted", &agv::RobotUpdateHandle::interrupted)

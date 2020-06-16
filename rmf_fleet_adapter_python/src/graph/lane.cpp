@@ -145,20 +145,24 @@ void bind_lane(py::module &m) {
       .def("duration", &Lane::Event::duration)
       .def("execute", &Lane::Event::execute<Lane::Executor&>)
       .def("clone", &Lane::Event::clone)
-      // TODO(CH3): Update when a std library smart pointer is used instead
-      // These methods don't work for now.
       .def_static("door_open_make",
-                  py::overload_cast<Lane::DoorOpen>(&Lane::Event::make))
+                  py::overload_cast<Lane::DoorOpen>(&Lane::Event::make),
+                  py::return_value_policy::reference_internal)
       .def_static("door_close_make",
-                  py::overload_cast<Lane::DoorClose>(&Lane::Event::make))
+                  py::overload_cast<Lane::DoorClose>(&Lane::Event::make),
+                  py::return_value_policy::reference_internal)
       .def_static("lift_door_open_make",
-                  py::overload_cast<Lane::LiftDoorOpen>(&Lane::Event::make))
+                  py::overload_cast<Lane::LiftDoorOpen>(&Lane::Event::make),
+                  py::return_value_policy::reference_internal)
       .def_static("lift_door_close_make",
-                  py::overload_cast<Lane::LiftDoorClose>(&Lane::Event::make))
+                  py::overload_cast<Lane::LiftDoorClose>(&Lane::Event::make),
+                  py::return_value_policy::reference_internal)
       .def_static("lift_move_make",
-                  py::overload_cast<Lane::LiftMove>(&Lane::Event::make))
+                  py::overload_cast<Lane::LiftMove>(&Lane::Event::make),
+                  py::return_value_policy::reference_internal)
       .def_static("dock_make",
-                  py::overload_cast<Lane::Dock>(&Lane::Event::make));
+                  py::overload_cast<Lane::Dock>(&Lane::Event::make),
+                  py::return_value_policy::reference_internal);
 
   py::class_<rmf_utils::clone_ptr<Lane::Event> >(m_lane, "EventPtr")
       .def(py::init<>());
