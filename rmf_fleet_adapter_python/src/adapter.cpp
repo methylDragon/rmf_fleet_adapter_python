@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "rmf_traffic_ros2/Time.hpp"
 #include "rmf_fleet_adapter/agv/Adapter.hpp"
 #include "rmf_fleet_adapter/agv/test/MockAdapter.hpp"
 #include "rmf_fleet_adapter_python/PyRobotCommandHandle.hpp"
@@ -35,7 +36,9 @@ PYBIND11_MODULE(rmf_adapter, m) {
                std::shared_ptr<agv::RobotCommandHandle> > \
       (m, "RobotCommandHandle", py::dynamic_attr())
         .def(py::init<>())
-        .def("follow_new_path", &agv::RobotCommandHandle::follow_new_path)
+        .def("follow_new_path", &agv::RobotCommandHandle::follow_new_path,
+             py::call_guard<py::scoped_ostream_redirect,
+                            py::scoped_estream_redirect>())
         .def("stop", &agv::RobotCommandHandle::stop)
         .def("dock", &agv::RobotCommandHandle::dock);
 
@@ -105,7 +108,10 @@ PYBIND11_MODULE(rmf_adapter, m) {
     // ADAPTER =================================================================
     // Light wrappers
     py::class_<rclcpp::NodeOptions>(m, "NodeOptions");
-    py::class_<rclcpp::Node, std::shared_ptr<rclcpp::Node> >(m, "Node");
+    py::class_<rclcpp::Node, std::shared_ptr<rclcpp::Node> >(m, "Node")
+        .def("now", [&](rclcpp::Node& self){
+            return rmf_traffic_ros2::convert(self.now());
+        });
 
     // Python rclcpp init call
     m.def("init_rclcpp", [](){ rclcpp::init(0, nullptr); });
@@ -127,7 +133,10 @@ PYBIND11_MODULE(rmf_adapter, m) {
                                   (&agv::Adapter::node))
         // .def("request_delivery")  // Needless in Python API
         .def("start", &agv::Adapter::start)
-        .def("stop", &agv::Adapter::stop);
+        .def("stop", &agv::Adapter::stop)
+        .def("now", [&](agv::Adapter& self){
+            return rmf_traffic_ros2::convert(self.node()->now());
+        });
 
     py::class_<agv::test::MockAdapter,
                std::shared_ptr<agv::test::MockAdapter> > \
@@ -147,8 +156,9 @@ PYBIND11_MODULE(rmf_adapter, m) {
                                   (&agv::test::MockAdapter::node))
         .def("request_delivery", &agv::test::MockAdapter::request_delivery)
         .def("start",
-             &agv::test::MockAdapter::start,
-             py::return_value_policy::reference_internal)
-        .def("stop", &agv::test::MockAdapter::stop,
-             py::return_value_policy::reference_internal);
+             &agv::test::MockAdapter::start)
+        .def("stop", &agv::test::MockAdapter::stop)
+        .def("now", [&](agv::test::MockAdapter& self){
+            return rmf_traffic_ros2::convert(self.node()->now());
+        });
 }
