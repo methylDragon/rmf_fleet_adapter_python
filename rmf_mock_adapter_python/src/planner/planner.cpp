@@ -69,9 +69,7 @@ void bind_plan(py::module &m) {
       // Private constructor
       .def_property_readonly("position",
                              &Plan::Waypoint::position)
-      .def_property("time",
-                    py::overload_cast<>(&Plan::Waypoint::time, py::const_),
-                    py::overload_cast<rmf_traffic::Time>(&Plan::Waypoint::time))
+      .def_property_readonly("time", &Plan::Waypoint::time)
       .def_property_readonly("graph_index",
                              &Plan::Waypoint::graph_index)
       .def_property_readonly("event",
