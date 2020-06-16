@@ -65,7 +65,7 @@ void bind_types(py::module &m) {
 
   py::class_<rmf_utils::nullopt_t>(m_type, "NullOptional");
 
-  py::class_<rmf_task_msgs::msg::Delivery>(m_type, "DeliveryMsg")
+  py::class_<rmf_task_msgs::msg::Delivery>(m_type, "CPPDeliveryMsg")
       .def(py::init(&make_delivery_msg),
            py::arg("task_id") = "",
            py::arg("pickup_place_name") = "",
