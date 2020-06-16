@@ -145,7 +145,10 @@ PYBIND11_MODULE(rmf_adapter, m) {
         .def_property_readonly("node",
                                py::overload_cast<> \
                                   (&agv::test::MockAdapter::node))
-        // .def("request_delivery")  // Needless in Python API
-        .def("start", &agv::test::MockAdapter::start)
-        .def("stop", &agv::test::MockAdapter::stop);
+        .def("request_delivery", &agv::test::MockAdapter::request_delivery)
+        .def("start",
+             &agv::test::MockAdapter::start,
+             py::return_value_policy::reference_internal)
+        .def("stop", &agv::test::MockAdapter::stop,
+             py::return_value_policy::reference_internal);
 }

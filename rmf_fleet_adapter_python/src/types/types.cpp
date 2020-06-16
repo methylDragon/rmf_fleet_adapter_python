@@ -9,13 +9,28 @@
 #include <rmf_utils/clone_ptr.hpp>
 #include <rmf_utils/optional.hpp>
 
+#include <rmf_task_msgs/msg/delivery.hpp>
+
 namespace py = pybind11;
 
-// PYBIND11_DECLARE_HOLDER_TYPE(T, rmf_utils::unique_impl_ptr<T>)
-// PYBIND11_DECLARE_HOLDER_TYPE(T, rmf_utils::clone_ptr<T>)
-// PYBIND11_DECLARE_HOLDER_TYPE(T, std::weak_ptr<T>)
+rmf_task_msgs::msg::Delivery make_delivery_msg(
+  std::string task_id,
+  std::string pickup_place_name,
+  std::string pickup_dispenser,
+  std::string dropoff_place_name,
+  std::string dropoff_dispenser)
+{
+  rmf_task_msgs::msg::Delivery request;
+  request.task_id = task_id;
 
-// PYBIND11_DECLARE_HOLDER_TYPE(T, rmf_utils::clone_ptr<T>)
+  request.pickup_place_name = pickup_place_name;
+  request.pickup_dispenser = pickup_dispenser;
+
+  request.dropoff_place_name = dropoff_place_name;
+  request.dropoff_dispenser = dropoff_dispenser;
+
+  return request;
+}
 
 void bind_types(py::module &m) {
   auto m_type = m.def_submodule("type");
@@ -49,4 +64,12 @@ void bind_types(py::module &m) {
           (&rmf_utils::optional<Eigen::Vector2d>::value));
 
   py::class_<rmf_utils::nullopt_t>(m_type, "NullOptional");
+
+  py::class_<rmf_task_msgs::msg::Delivery>(m_type, "DeliveryMsg")
+      .def(py::init(&make_delivery_msg),
+           py::arg("task_id") = "",
+           py::arg("pickup_place_name") = "",
+           py::arg("pickup_dispenser") = "",
+           py::arg("dropoff_place_name") = "",
+           py::arg("dropoff_dispenser") = "");
 }
