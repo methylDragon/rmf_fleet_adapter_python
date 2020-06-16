@@ -33,9 +33,10 @@ public:
 
   void execute(const Lane::DoorOpen& open) override
   {
-    PYBIND11_OVERLOAD_PURE(
+    PYBIND11_OVERLOAD_PURE_NAME(
       void,
       Lane::Executor,
+      "door_open_execute",
       execute,
       open
     );
@@ -43,9 +44,10 @@ public:
 
   void execute(const Lane::DoorClose& close) override
   {
-    PYBIND11_OVERLOAD_PURE(
+    PYBIND11_OVERLOAD_PURE_NAME(
       void,
       Lane::Executor,
+      "door_close_execute",
       execute,
       close
     );
@@ -53,9 +55,10 @@ public:
 
   void execute(const Lane::LiftDoorOpen& open) override
   {
-    PYBIND11_OVERLOAD_PURE(
+    PYBIND11_OVERLOAD_PURE_NAME(
       void,
       Lane::Executor,
+      "lift_door_open_execute",
       execute,
       open
     );
@@ -63,9 +66,10 @@ public:
 
   void execute(const Lane::LiftDoorClose& close) override
   {
-    PYBIND11_OVERLOAD_PURE(
+    PYBIND11_OVERLOAD_PURE_NAME(
       void,
       Lane::Executor,
+      "lift_door_close_execute",
       execute,
       close
     );
@@ -73,9 +77,10 @@ public:
 
   void execute(const Lane::LiftMove& move) override
   {
-    PYBIND11_OVERLOAD_PURE(
+    PYBIND11_OVERLOAD_PURE_NAME(
       void,
       Lane::Executor,
+      "lift_move_execute",
       execute,
       move
     );
@@ -83,9 +88,10 @@ public:
 
   void execute(const Lane::Dock& dock) override
   {
-    PYBIND11_OVERLOAD_PURE(
+    PYBIND11_OVERLOAD_PURE_NAME(
       void,
       Lane::Executor,
+      "dock_execute",
       execute,
       dock
     );
