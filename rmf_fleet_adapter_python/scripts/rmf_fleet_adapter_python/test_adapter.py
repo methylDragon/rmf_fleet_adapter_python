@@ -1,21 +1,19 @@
+import rmf_dispenser_msgs.msg as dispenser_msgs
+from rmf_task_msgs.msg import TaskSummary
+
+import rclpy
+from rclpy.executors import SingleThreadedExecutor
 from rclpy.node import Node
 
-from rmf_task_msgs.msg import TaskSummary
-import rmf_dispenser_msgs.msg as dispenser_msgs
-
-from rclpy.executors import SingleThreadedExecutor
-import rclpy
-
+import rmf_adapter as adpt
 import rmf_adapter.vehicletraits as traits
 import rmf_adapter.geometry as geometry
 import rmf_adapter.graph as graph
 import rmf_adapter.plan as plan
-import rmf_adapter as adpt
 
-from multiprocessing import Process
 from functools import partial
 import datetime
-import random
+import time
 
 ###############################################################################
 # PARAMS
@@ -58,32 +56,46 @@ class MockQuietDispenser(Node):
         super().__init__(name)
 
         # Variables
-        self.name = name
-        self.tasks = {}
-
-        self.success_flag = False
-        self._timer = None
+        self.reset(name)
 
         # Pub-sub
         self.result_pub = self.create_publisher(
             dispenser_msgs.DispenserResult,
             'dispenser_results',
-            10
+            1
         )
         self.request_sub = self.create_subscription(
             dispenser_msgs.DispenserRequest,
             'dispenser_requests',
             self._process_request_cb,
-            10
+            1
         )
 
+    def reset(self, name=None):
+        if name is not None:
+            self.name = name
+
+        self.tasks = {}
+        self.success_flag = False
+
+        try:
+            self.timer.reset()
+            self.timer.cancel()
+        except Exception:
+            pass
+
+        self.timer = None
+
     def _process_request_cb(self, msg):
-        print("QUIET RECEIVED A CB")
         # Process request if addressed to this dispenser
         if msg.target_guid != self.name:
             return
 
-        if not self.tasks.get(msg.request_guid):
+        print("[MockQuietDispenser] REQUEST RECEIVED")
+        if self.tasks.get(msg.request_guid):
+            print("QUIET DISPENSER SUCCESS")
+            status = DISPENSER_RESULT_SUCCESS
+        else:
             self.tasks[msg.request_guid] = False
             status = DISPENSER_RESULT_ACKNOWLEDGED
 
@@ -91,8 +103,6 @@ class MockQuietDispenser(Node):
                 0.01,
                 partial(self._timer_cb, msg=msg)
             )
-        else:
-            status = DISPENSER_RESULT_SUCCESS
 
         result = dispenser_msgs.DispenserResult()
         result.time = self.get_clock().now().to_msg()
@@ -106,8 +116,6 @@ class MockQuietDispenser(Node):
         if not self.timer:
             return
 
-        self.timer.reset()
-
         result = dispenser_msgs.DispenserResult()
         result.time = self.get_clock().now().to_msg()
         result.status = DISPENSER_RESULT_SUCCESS
@@ -116,6 +124,7 @@ class MockQuietDispenser(Node):
 
         self.result_pub.publish(result)
         self.success_flag = True
+        self.timer.cancel()
 
 
 class MockFlakyDispenser(Node):
@@ -143,13 +152,13 @@ class MockFlakyDispenser(Node):
         self.state_pub = self.create_publisher(
             dispenser_msgs.DispenserState,
             'dispenser_states',
-            10
+            1
         )
         self.request_sub = self.create_subscription(
             dispenser_msgs.DispenserRequest,
             'dispenser_requests',
             self._process_request_cb,
-            10
+            1
         )
 
         self._timer = self.create_timer(
@@ -157,13 +166,21 @@ class MockFlakyDispenser(Node):
             self._timer_cb
         )
 
+    def reset(self, name=None):
+        if name is not None:
+            self.name = name
+
+        self.request_queue = []
+
+        self.success_flag = False
+        self._fulfilled_flag = False
+
     def _process_request_cb(self, msg):
         # Add requests to queue if addressed to this dispenser
-        print("FLAKY REQUEST RECEIVED", msg)
         if msg.target_guid != self.name:
             return
 
-        print("APPENDING REQUEST ENTRY")
+        print("[MockFlakyDispenser] REQUEST RECEIVED")
         self.request_queue.append(self.RequestEntry(msg, 0))
 
     def _timer_cb(self):
@@ -246,8 +263,6 @@ class MockRobotCommand(adpt.RobotCommandHandle):
             if lane.entry.event:
                 executor = self.EventListener(self.dock_to_wp,
                                               lane.exit.waypoint_index)
-                # TODO(CH3): Why is the passed in event execute()
-                # not implemented?!?
                 try:
                     lane.entry.event.execute(executor)
                 except Exception:
@@ -258,6 +273,9 @@ class MockRobotCommand(adpt.RobotCommandHandle):
                         waypoints,
                         next_arrival_estimator,  # function!
                         path_finished_callback):
+        print("\n[RobotCommandHandle] Setting new path of %d waypoints..."
+              % len(waypoints))
+
         self.current_waypoint_target = 0
         self.active = True
         self.timer = self.node.create_timer(
@@ -270,6 +288,7 @@ class MockRobotCommand(adpt.RobotCommandHandle):
 
     def stop(self):
         self.timer.reset()
+        self.timer.cancel()
 
     def dock(self, dock_name, docking_finished_callback):
         assert dock_name in self.dock_to_wp
@@ -283,7 +302,7 @@ class MockRobotCommand(adpt.RobotCommandHandle):
             self.visited_waypoints.get(waypoint, 0) + 1
 
         docking_finished_callback()
-        print("DOCKING FINISHED")
+        print("[RobotCommandHandle] DOCKING FINISHED")
 
     def _timer_cb(self,
                   waypoints,
@@ -300,7 +319,7 @@ class MockRobotCommand(adpt.RobotCommandHandle):
             previous_waypoint = waypoints[self.current_waypoint_target - 1]
 
             if previous_waypoint.graph_index.has_value:
-                print("UPDATEHANDLE UPDATING ROBOT POSITION:",
+                print("[RobotUpdateHandle] UPDATING ROBOT POSITION:",
                       previous_waypoint.graph_index.value)
 
                 self.updater.update_position(
@@ -313,7 +332,7 @@ class MockRobotCommand(adpt.RobotCommandHandle):
                     + 1
                 )
             else:
-                print("UPDATEHANDLE UPDATING ROBOT POSITION DEFAULT:",
+                print("[RobotUpdateHandle] UPDATING ROBOT POSITION DEFAULT:",
                       previous_waypoint.position)
                 # TODO(CH3): NOTE(CH3): Confirm this magic string is wanted
                 self.updater.update_position("test_map",
@@ -325,23 +344,38 @@ class MockRobotCommand(adpt.RobotCommandHandle):
             test_delay = (datetime.timedelta(milliseconds=750)
                           * self.current_waypoint_target)
 
-            delayed_arrival_time = waypoint.time + test_delay
             now = datetime.datetime.fromtimestamp(self.node
                                                   .get_clock()
                                                   .now()
-                                                  .seconds_nanoseconds()[0])
+                                                  .nanoseconds
+                                                  / 1e9)
 
-            remaining_time = now - (now - delayed_arrival_time)
-            next_arrival_estimator(self.current_waypoint_target,
-                                   remaining_time)
+            delayed_arrival_time = waypoint.time + test_delay
+
+            # Note: This weird arithmetic is because next_arrival_estimator
+            # expects a std::chrono::duration,
+            # not a std::chrono::steady_clock::time_point
+
+            # The duration represents the time delay from
+            # self.node.get_clock().now() till the arrival time,
+            # and NOT the time_point that represents that arrival time!!!
+            next_arrival_estimator(
+                self.current_waypoint_target,
+                datetime.datetime.fromtimestamp(
+                    delayed_arrival_time.total_seconds()
+                )
+                - now
+            )
+
         else:
             self.active = False
             self.timer.reset()
+
             path_finished_callback()
-            print("PATH FINISHED")
+            print("[RobotCommandHandle] PATH FINISHED")
 
 
-if __name__ == "__main__":
+def main():
     # INIT RCL ================================================================
     rclpy.init()
     adpt.init_rclcpp()
@@ -404,24 +438,19 @@ if __name__ == "__main__":
         and dropoff_name in test_graph.keys
 
     # INIT FLEET ==============================================================
-
     profile = traits.Profile(geometry.make_final_convex_circle(1.0))
     robot_traits = traits.VehicleTraits(linear=traits.Limits(0.7, 0.3),
                                         angular=traits.Limits(1.0, 0.45),
                                         profile=profile)
 
     # Manages delivery or loop requests
-    adapter = adpt.MockAdapter("test_Delivery")
+    adapter = adpt.MockAdapter("TestDeliveryAdapter")
     fleet = adapter.add_fleet("test_fleet", robot_traits, test_graph)
     fleet.accept_delivery_requests(lambda x: True)
 
     cmd_node = Node("RobotCommandHandle")
-    time_now = datetime.datetime.fromtimestamp(cmd_node
-                                               .get_clock()
-                                               .now()
-                                               .seconds_nanoseconds()[0])
 
-    starts = [plan.Start(datetime.datetime.now() - time_now,
+    starts = [plan.Start(adapter.now(),
                          0,
                          0.0)]
 
@@ -443,12 +472,14 @@ if __name__ == "__main__":
     completed = False
 
     def task_cb(msg):
-        global at_least_one_incomplete
-        global completed
+        nonlocal at_least_one_incomplete
+        nonlocal completed
 
         if msg.state == TASK_STATE_COMPLETED:
             completed = True
+            at_least_one_incomplete = False
         else:
+            completed = False
             at_least_one_incomplete = True
 
     task_node = rclpy.create_node("task_summary_node")
@@ -462,26 +493,30 @@ if __name__ == "__main__":
     flaky_dispenser = MockFlakyDispenser(flaky_dispenser_name)
 
     # FINAL PREP ==============================================================
-    request = adpt.type.DeliveryMsg("test_delivery",
-                                    pickup_name,
-                                    quiet_dispenser_name,
-                                    dropoff_name,
-                                    flaky_dispenser_name)
-
     rclpy_executor = SingleThreadedExecutor()
-    # rclpy_executor.add_node(task_node)
+    rclpy_executor.add_node(task_node)
     rclpy_executor.add_node(cmd_node)
     rclpy_executor.add_node(quiet_dispenser)
     rclpy_executor.add_node(flaky_dispenser)
 
+    last_quiet_state = False
+    last_flaky_state = False
+
+    # GO! =====================================================================
     adapter.start()
+
+    print("# SENDING NEW REQUEST ############################################")
+    request = adpt.type.CPPDeliveryMsg("test_delivery",
+                                       pickup_name,
+                                       quiet_dispenser_name,
+                                       dropoff_name,
+                                       flaky_dispenser_name)
+    quiet_dispenser.reset()
+    flaky_dispenser.reset()
     adapter.request_delivery(request)
-    rclpy_executor.spin_once(100)
+    rclpy_executor.spin_once(1)
 
-    last_quiet_state = None
-    last_flaky_state = None
-
-    for i in range(10000):
+    for i in range(1000):
         if quiet_dispenser.success_flag != last_quiet_state:
             last_quiet_state = quiet_dispenser.success_flag
             print("== QUIET DISPENSER FLIPPED SUCCESS STATE ==",
@@ -492,19 +527,66 @@ if __name__ == "__main__":
             print("== FLAKY DISPENSER FLIPPED SUCCESS STATE ==",
                   last_flaky_state)
 
-        rclpy_executor.spin_once(100)
-
         if quiet_dispenser.success_flag and flaky_dispenser.success_flag:
+            rclpy_executor.spin_once(1)
             break
 
+        rclpy_executor.spin_once(1)
+        time.sleep(0.2)
 
-    # rclpy.spin_once(adapter)
+    print("\n== DEBUG TASK REPORT ==")
+    print("Visited waypoints:", robot_cmd.visited_waypoints)
+    print("At least one incomplete:", at_least_one_incomplete)
+    print("Completed:", completed)
+    print()
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    # quiet_dispenser.destroy_node()
-    # flaky_dispenser.destroy_node()
-    # quiet_dispenser.destroy_node()
+    assert len(robot_cmd.visited_waypoints) == 6
+    assert all([x in robot_cmd.visited_waypoints for x in [0, 5, 6, 7, 8, 10]])
+    assert at_least_one_incomplete
 
+    # print("# SENDING NEW REQUEST ############################################")
+    # request_two = adpt.type.CPPDeliveryMsg(
+    #     "test_delivery_two",
+    #     dropoff_name,
+    #     flaky_dispenser_name,
+    #     pickup_name,
+    #     quiet_dispenser_name
+    # )
+    #
+    # quiet_dispenser.reset()
+    # flaky_dispenser.reset()
+    # adapter.request_delivery(request_two)
+    # rclpy_executor.spin_once(1)
+    # time.sleep(3)
+    #
+    # for i in range(100):
+    #     print("LOL")
+    #     if quiet_dispenser.success_flag != last_quiet_state:
+    #         last_quiet_state = quiet_dispenser.success_flag
+    #         print("\n== QUIET DISPENSER FLIPPED SUCCESS STATE ==",
+    #               last_quiet_state)
+    #
+    #     if flaky_dispenser.success_flag != last_flaky_state:
+    #         last_flaky_state = flaky_dispenser.success_flag
+    #         print("\n== FLAKY DISPENSER FLIPPED SUCCESS STATE ==",
+    #               last_flaky_state)
+    #
+    #     if quiet_dispenser.success_flag and flaky_dispenser.success_flag:
+    #         rclpy_executor.spin_once(1)
+    #         break
+    #
+    #     for i in range(1000):
+    #         rclpy_executor.spin_once(1)
+    #     time.sleep(0.5)
+
+    task_node.destroy_node()
+    cmd_node.destroy_node()
+    quiet_dispenser.destroy_node()
+    flaky_dispenser.destroy_node()
+
+    rclpy_executor.shutdown()
     rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()
