@@ -40,6 +40,16 @@ But barring that, you may also peruse the existing scripts in each package's `sc
 
 The bound APIs are almost identical to the `rmf_core` ones as well, so if the written documentation for these packages, and the Python usage examples in the scripts or tests are insufficient, you can also look into the relevant C++ implementations as a last resort.
 
+Alternatively, you may also explore any interfaces with:
+
+```python
+# To list any available members or methods
+dir(adpt.<WHATEVER_CLASS_YOU_WANT_TO_INSPECT>)
+
+# To see function signatures
+help(adpt.<WHATEVER_CLASS_YOU_WANT_TO_INSPECT>)
+```
+
 
 
 ### Binding Details
