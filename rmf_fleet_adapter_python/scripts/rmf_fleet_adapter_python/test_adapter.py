@@ -351,6 +351,7 @@ class MockRobotCommand(adpt.RobotCommandHandle):
                                                   / 1e9)
 
             delayed_arrival_time = waypoint.time + test_delay
+            delayed_arrival_time_steady = waypoint.steady_time + test_delay
 
             # Note: This weird arithmetic is because next_arrival_estimator
             # expects a std::chrono::duration,
@@ -362,10 +363,18 @@ class MockRobotCommand(adpt.RobotCommandHandle):
             next_arrival_estimator(
                 self.current_waypoint_target,
                 datetime.datetime.fromtimestamp(
-                    delayed_arrival_time.total_seconds()
+                    delayed_arrival_time_steady.total_seconds()
                 )
                 - now
             )
+
+            next_arrival_estimator(self.current_waypoint_target,
+                                   delayed_arrival_time - now)
+            print("NORMAL", delayed_arrival_time - now)
+            print("STEADY", datetime.datetime.fromtimestamp(
+                                delayed_arrival_time_steady.total_seconds()
+                            ) - now)
+
 
         else:
             self.active = False
@@ -450,7 +459,7 @@ def main():
 
     cmd_node = Node("RobotCommandHandle")
 
-    starts = [plan.Start(adapter.now(),
+    starts = [plan.Start(adapter.steady_now(),
                          0,
                          0.0)]
 

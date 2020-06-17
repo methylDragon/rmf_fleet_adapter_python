@@ -4,6 +4,7 @@
 #include <pybind11/eigen.h>
 #include <pybind11/stl.h>
 
+#include "rmf_traffic_ros2/Time.hpp"
 #include <rmf_traffic/agv/Planner.hpp>
 
 namespace py = pybind11;
@@ -71,8 +72,13 @@ void bind_plan(py::module &m) {
       // Private constructor
       .def_property_readonly("position",
                              &Plan::Waypoint::position)
-      .def_property_readonly("time",
-                             &Plan::Waypoint::time)
+      .def_property_readonly("time", [](Plan::Waypoint& self) {
+            // The time count is in nanoseconds!
+            return std::chrono::time_point<std::chrono::system_clock,
+                                           std::chrono::nanoseconds> \
+                   (self.time().time_since_epoch());
+          })
+      .def_property_readonly("steady_time", &Plan::Waypoint::time)
       .def_property_readonly("graph_index",
                              &Plan::Waypoint::graph_index)
       .def_property_readonly("event",

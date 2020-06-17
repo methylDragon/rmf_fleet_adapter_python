@@ -134,7 +134,16 @@ PYBIND11_MODULE(rmf_adapter, m) {
         // .def("request_delivery")  // Needless in Python API
         .def("start", &agv::Adapter::start)
         .def("stop", &agv::Adapter::stop)
-        .def("now", [&](agv::Adapter& self){
+        .def("now", [&](agv::test::MockAdapter& self) {
+            return std::chrono::time_point<std::chrono::system_clock,
+                                           std::chrono::nanoseconds> \
+                   (rmf_traffic_ros2::convert
+                     (
+                       self.node()->now()
+                     )
+                     .time_since_epoch());
+        })
+        .def("steady_now", [&](agv::test::MockAdapter& self) {
             return rmf_traffic_ros2::convert(self.node()->now());
         });
 
@@ -158,7 +167,16 @@ PYBIND11_MODULE(rmf_adapter, m) {
         .def("start",
              &agv::test::MockAdapter::start)
         .def("stop", &agv::test::MockAdapter::stop)
-        .def("now", [&](agv::test::MockAdapter& self){
+        .def("now", [&](agv::test::MockAdapter& self) {
+            return std::chrono::time_point<std::chrono::system_clock,
+                                           std::chrono::nanoseconds> \
+                   (rmf_traffic_ros2::convert
+                     (
+                       self.node()->now()
+                     )
+                     .time_since_epoch());
+        })
+        .def("steady_now", [&](agv::test::MockAdapter& self) {
             return rmf_traffic_ros2::convert(self.node()->now());
         });
 }
