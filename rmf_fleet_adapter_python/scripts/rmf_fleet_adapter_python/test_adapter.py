@@ -51,6 +51,9 @@ class MockQuietDispenser(Node):
     """
     This mock dispenser will not publish any states; it will only publish a
     successful result and nothing else.
+
+    Note: This dispenser is just using pure rclpy, there is no usage of
+    rmf_adapter here
     """
     def __init__(self, name):
         super().__init__(name)
@@ -132,6 +135,9 @@ class MockFlakyDispenser(Node):
     This mock dispenser will not publish any results; it will only publish
     states. This is representative of network issues where a result might not
     actually arrive, but the state heartbeats can still get through.
+
+    Note: This dispenser is just using pure rclpy, there is no usage of
+    rmf_adapter here
     """
     class RequestEntry():
         def __init__(self, request, publish_count):
