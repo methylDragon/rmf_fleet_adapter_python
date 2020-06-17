@@ -21,17 +21,42 @@ using Options = Planner::Options;
 using Configuration = Planner::Configuration;
 using Result = Planner::Result;
 
+Start make_start(std::chrono::time_point<std::chrono::system_clock,
+                                         std::chrono::nanoseconds>
+                   initial_time,
+                 std::size_t initial_waypoint,
+                 double initial_orientation,
+                 rmf_utils::optional<Eigen::Vector2d> location,
+                 rmf_utils::optional<std::size_t> initial_lane)
+{
+  return Start(std::chrono::time_point<std::chrono::steady_clock,
+                                       std::chrono::nanoseconds> \
+                 (initial_time.time_since_epoch()),
+               initial_waypoint,
+               initial_orientation,
+               location,
+               initial_lane);
+}
+
 void bind_plan(py::module &m) {
   // bind_types(m);  // Bound in parent module!
   auto m_plan = m.def_submodule("plan");
 
   // PLANNER ===================================================================
   py::class_<Start>(m_plan, "Start")
-      .def(py::init<rmf_traffic::Time,
-                    std::size_t,
-                    double,
-                    rmf_utils::optional<Eigen::Vector2d>,
-                    rmf_utils::optional<std::size_t> >(),
+      // .def(py::init<rmf_traffic::Time,
+      //               std::size_t,
+      //               double,
+      //               rmf_utils::optional<Eigen::Vector2d>,
+      //               rmf_utils::optional<std::size_t> >(),
+      //      py::arg("initial_time"),
+      //      py::arg("initial_waypoint"),
+      //      py::arg("initial_orientation"),
+      //      py::arg("location") = rmf_utils::optional<Eigen::Vector2d> \
+      //          (rmf_utils::nullopt),
+      //      py::arg("initial_lane") = rmf_utils::optional<std::size_t> \
+      //          (rmf_utils::nullopt))
+      .def(py::init(&make_start),
            py::arg("initial_time"),
            py::arg("initial_waypoint"),
            py::arg("initial_orientation"),
@@ -76,9 +101,8 @@ void bind_plan(py::module &m) {
             // The time count is in nanoseconds!
             return std::chrono::time_point<std::chrono::system_clock,
                                            std::chrono::nanoseconds> \
-                   (self.time().time_since_epoch());
+                     (self.time().time_since_epoch());
           })
-      .def_property_readonly("steady_time", &Plan::Waypoint::time)
       .def_property_readonly("graph_index",
                              &Plan::Waypoint::graph_index)
       .def_property_readonly("event",

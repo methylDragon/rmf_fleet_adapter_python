@@ -351,31 +351,16 @@ class MockRobotCommand(adpt.RobotCommandHandle):
                                                   / 1e9)
 
             delayed_arrival_time = waypoint.time + test_delay
-            delayed_arrival_time_steady = waypoint.steady_time + test_delay
 
-            # Note: This weird arithmetic is because next_arrival_estimator
+            # Note: next_arrival_estimator
             # expects a std::chrono::duration,
             # not a std::chrono::steady_clock::time_point
 
             # The duration represents the time delay from
             # self.node.get_clock().now() till the arrival time,
             # and NOT the time_point that represents that arrival time!!!
-            next_arrival_estimator(
-                self.current_waypoint_target,
-                datetime.datetime.fromtimestamp(
-                    delayed_arrival_time_steady.total_seconds()
-                )
-                - now
-            )
-
             next_arrival_estimator(self.current_waypoint_target,
                                    delayed_arrival_time - now)
-            print("NORMAL", delayed_arrival_time - now)
-            print("STEADY", datetime.datetime.fromtimestamp(
-                                delayed_arrival_time_steady.total_seconds()
-                            ) - now)
-
-
         else:
             self.active = False
             self.timer.reset()
@@ -459,7 +444,7 @@ def main():
 
     cmd_node = Node("RobotCommandHandle")
 
-    starts = [plan.Start(adapter.steady_now(),
+    starts = [plan.Start(adapter.now(),
                          0,
                          0.0)]
 
@@ -553,40 +538,42 @@ def main():
     assert all([x in robot_cmd.visited_waypoints for x in [0, 5, 6, 7, 8, 10]])
     assert at_least_one_incomplete
 
-    # print("# SENDING NEW REQUEST ############################################")
-    # request_two = adpt.type.CPPDeliveryMsg(
-    #     "test_delivery_two",
-    #     dropoff_name,
-    #     flaky_dispenser_name,
-    #     pickup_name,
-    #     quiet_dispenser_name
-    # )
-    #
+    # Uncomment this to send a second request.
+    # But note! The TaskManager has to be fixed first to allow task pre-emption
+    # print("# SENDING NEW REQUEST ##########################################")
+    # request = adpt.type.CPPDeliveryMsg("test_delivery_two",
+    #                                    dropoff_name,
+    #                                    flaky_dispenser_name,
+    #                                    pickup_name,
+    #                                    quiet_dispenser_name)
     # quiet_dispenser.reset()
     # flaky_dispenser.reset()
-    # adapter.request_delivery(request_two)
+    # adapter.request_delivery(request)
     # rclpy_executor.spin_once(1)
-    # time.sleep(3)
     #
-    # for i in range(100):
-    #     print("LOL")
+    # for i in range(1000):
     #     if quiet_dispenser.success_flag != last_quiet_state:
     #         last_quiet_state = quiet_dispenser.success_flag
-    #         print("\n== QUIET DISPENSER FLIPPED SUCCESS STATE ==",
+    #         print("== QUIET DISPENSER FLIPPED SUCCESS STATE ==",
     #               last_quiet_state)
     #
     #     if flaky_dispenser.success_flag != last_flaky_state:
     #         last_flaky_state = flaky_dispenser.success_flag
-    #         print("\n== FLAKY DISPENSER FLIPPED SUCCESS STATE ==",
+    #         print("== FLAKY DISPENSER FLIPPED SUCCESS STATE ==",
     #               last_flaky_state)
     #
     #     if quiet_dispenser.success_flag and flaky_dispenser.success_flag:
     #         rclpy_executor.spin_once(1)
     #         break
     #
-    #     for i in range(1000):
-    #         rclpy_executor.spin_once(1)
-    #     time.sleep(0.5)
+    #     rclpy_executor.spin_once(1)
+    #     time.sleep(0.2)
+    #
+    # print("\n== DEBUG TASK REPORT ==")
+    # print("Visited waypoints:", robot_cmd.visited_waypoints)
+    # print("At least one incomplete:", at_least_one_incomplete)
+    # print("Completed:", completed)
+    # print()
 
     task_node.destroy_node()
     cmd_node.destroy_node()

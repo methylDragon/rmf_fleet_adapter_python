@@ -168,7 +168,6 @@ void bind_lane(py::module &m) {
       .def(py::init<>());
 
   // NODE ======================================================================
-
   py::class_<Lane::Node>(m_lane, "Node", py::dynamic_attr())
       .def(py::init<std::size_t,
                     rmf_utils::clone_ptr<Lane::Event>,

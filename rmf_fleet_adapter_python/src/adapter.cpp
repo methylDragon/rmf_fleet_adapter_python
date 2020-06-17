@@ -142,9 +142,6 @@ PYBIND11_MODULE(rmf_adapter, m) {
                        self.node()->now()
                      )
                      .time_since_epoch());
-        })
-        .def("steady_now", [&](agv::test::MockAdapter& self) {
-            return rmf_traffic_ros2::convert(self.node()->now());
         });
 
     py::class_<agv::test::MockAdapter,
@@ -175,8 +172,5 @@ PYBIND11_MODULE(rmf_adapter, m) {
                        self.node()->now()
                      )
                      .time_since_epoch());
-        })
-        .def("steady_now", [&](agv::test::MockAdapter& self) {
-            return rmf_traffic_ros2::convert(self.node()->now());
         });
 }
