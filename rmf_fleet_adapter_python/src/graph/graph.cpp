@@ -9,6 +9,7 @@
 
 #include <rmf_utils/clone_ptr.hpp>
 #include "rmf_fleet_adapter/agv/Adapter.hpp"
+#include "rmf_fleet_adapter/agv/parse_graph.hpp"
 
 #include "rmf_fleet_adapter_python/graph/PyOrientationConstraint.hpp"
 #include "rmf_fleet_adapter_python/graph/PyVelocityConstraint.hpp"
@@ -188,4 +189,8 @@ void bind_graph(py::module &m) {
       .def("get_lane", py::overload_cast<std::size_t>(
           &Graph::get_lane, py::const_))
       .def_property_readonly("num_lanes", &Graph::num_lanes);
+
+  // PARSE GRAPH ==============================================================
+  // Helper function to parse a graph from a yaml file
+  m_graph.def("parse_graph", &rmf_fleet_adapter::agv::parse_graph);
 }
