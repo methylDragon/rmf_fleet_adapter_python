@@ -1,5 +1,5 @@
 # rmf_mock_adapter_python
-Python bindings for https://github.com/osrf/rmf_mock_adapter
+Python bindings for [rmf_mock_adapter](https://github.com/osrf/rmf_mock_adapter)
 
 
 
@@ -7,9 +7,9 @@ Python bindings for https://github.com/osrf/rmf_mock_adapter
 
 The `rmf_mock_adapter` package is simply that.
 
-A mock adapter with interfaces to `rmf_core`, but with no effect on the ROS2 graph. That means, no ROS2 publishing or subscribing, allowing for quick and easy prototyping of Python implemented fleet adapters as they interact with `rmf_core`.
+A mock adapter with interfaces to `rmf_core`, but with **no effect on the ROS2 graph**. That means, no ROS2 publishing or subscribing, allowing for quick and easy prototyping of Python implemented fleet adapters as they interact with `rmf_core`.
 
-If you want to, you can skip using this package and go directly into `rmf_fleet_adapter_python` to play around with the ROS2 side as well in addition to `rmf_core`.
+If you want to, **you can skip using this package** and go directly into `rmf_fleet_adapter_python` to play around with the ROS2 side as well, in addition to `rmf_core`.
 
 
 
