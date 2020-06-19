@@ -12,7 +12,6 @@
 #include "rmf_fleet_adapter/agv/parse_graph.hpp"
 
 #include "rmf_fleet_adapter_python/graph/PyOrientationConstraint.hpp"
-#include "rmf_fleet_adapter_python/graph/PyVelocityConstraint.hpp"
 
 namespace py = pybind11;
 
@@ -23,7 +22,6 @@ using Graph = rmf_traffic::agv::Graph;
 using Lane = rmf_traffic::agv::Graph::Lane;
 
 using OrientationConstraint = Graph::OrientationConstraint;
-using VelocityConstraint = Graph::VelocityConstraint;
 
 void bind_graph(py::module &m) {
   auto m_graph = m.def_submodule("graph");
@@ -94,28 +92,6 @@ void bind_graph(py::module &m) {
       .value("Forward", OrientationConstraint::Direction::Forward)
       .value("Backward", OrientationConstraint::Direction::Backward);
       // No export_value as the enum is an enum class (scoped enum)
-
-  // VELOCITY CONSTRAINT =======================================================
-  py::class_<VelocityConstraint,
-             PyVelocityConstraint,
-             std::unique_ptr<VelocityConstraint> >(m_graph,
-                                                   "VelocityConstraint",
-                                                   py::dynamic_attr())
-      .def(py::init<>())
-      .def("apply",
-           &VelocityConstraint::apply);
-      // TODO(CH3): Get this to work eventually when needed
-      // .def("clone",
-      //      &PyVelocityConstraint::clone_wrapper);
-
-  // clone_ptr
-  py::class_<rmf_utils::clone_ptr<VelocityConstraint> > \
-    (m_graph, "VelocityConstraintPtr")
-      .def(py::init<>());
-      // .def(py::init<OrientationConstraint::Direction,
-                    // std::vector<double> >());
-      // TODO(CH3): Potentially allow getting and setting of members
-      // as well as pointed to member methods
 
   // BIND LANE =================================================================
   // This MUST be specified after! Order matters!

@@ -214,38 +214,11 @@ def test_orientation_constraint():
         == graph.OrientationConstraintPtr
 
 
-# VELOCITY_CONSTRAINT =========================================================
-class TestVelocityConstraint(graph.VelocityConstraint):
-    """
-    Use this to create new implementations of velocity constraints!
-    You must create a subclass because the original is an abstract class.
-
-    Unfortunately there aren't any that are implemented in C++ currently.
-    """
-    __test__ = False
-
-    def apply(self, position, course_vector):
-        return True
-
-    def clone(self):
-        # Unfortunately the clone method won't work until we can
-        # access the private _ptr member directly
-        return True
-
-
-def test_velocity_constraint():
-    velocity_constraint = TestVelocityConstraint()
-    assert velocity_constraint.apply(three_d, two_d)
-    assert velocity_constraint.clone()
-
-
 # NODE ========================================================================
 node_one = lane.Node(1, acceptable_orientation_constraint_ptr)
 node_two = lane.Node(2,
                      event_ptr,
-                     acceptable_orientation_constraint_ptr,
-                     # Note, the velocity constrain there might as well be null
-                     graph.VelocityConstraintPtr())
+                     acceptable_orientation_constraint_ptr)
 
 
 # Once you've instantiated your nodes, you can manipulate their members

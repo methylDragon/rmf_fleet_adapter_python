@@ -171,14 +171,11 @@ void bind_lane(py::module &m) {
   py::class_<Lane::Node>(m_lane, "Node", py::dynamic_attr())
       .def(py::init<std::size_t,
                     rmf_utils::clone_ptr<Lane::Event>,
-                    rmf_utils::clone_ptr<Graph::OrientationConstraint>,
-                    rmf_utils::clone_ptr<Graph::VelocityConstraint> >(),
+                    rmf_utils::clone_ptr<Graph::OrientationConstraint>>(),
            py::arg("waypoint_index"),
            py::arg("event") = (rmf_utils::clone_ptr<Lane::Event>) nullptr,
            py::arg("orientation") = \
-              (rmf_utils::clone_ptr<Graph::OrientationConstraint>) nullptr,
-           py::arg("velocity") = \
-              (rmf_utils::clone_ptr<Graph::VelocityConstraint>) nullptr
+              (rmf_utils::clone_ptr<Graph::OrientationConstraint>) nullptr
           )
       .def(py::init<std::size_t,
                     rmf_utils::clone_ptr<Graph::OrientationConstraint> >(),
@@ -190,7 +187,5 @@ void bind_lane(py::module &m) {
       // Return policy for rawpointer properties defaults to reference_internal
       .def_property_readonly("event", &Lane::Node::event)
       .def_property_readonly(
-          "orientation_constraint", &Lane::Node::orientation_constraint)
-      .def_property_readonly(
-          "velocity_constraint", &Lane::Node::velocity_constraint);
+          "orientation_constraint", &Lane::Node::orientation_constraint);
 }
