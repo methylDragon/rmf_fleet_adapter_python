@@ -304,8 +304,8 @@ class MockRobotCommand(adpt.RobotCommandHandle):
         self.dockings[dock_name] = self.dockings.get(dock_name, 0) + 1
 
         waypoint = self.dock_to_wp[dock_name]
-        self.visited_waypoints[waypoint] = \
-            self.visited_waypoints.get(waypoint, 0) + 1
+        self.visited_waypoints[waypoint] = (
+            self.visited_waypoints.get(waypoint, 0) + 1)
 
         docking_finished_callback()
         print("[RobotCommandHandle] DOCKING FINISHED")

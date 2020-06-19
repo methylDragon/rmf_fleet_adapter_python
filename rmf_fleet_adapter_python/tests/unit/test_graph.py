@@ -197,10 +197,10 @@ two_d = np.reshape([1, 2], [2, 1])
 
 # You can also instantiate constraints for two C++ implemented constraints
 # The bindings resolve overloaded function calls!
-acceptable_orientation_constraint_ptr = \
-    graph.OrientationConstraint.make([1, 2, 3])
-direction_constraint_ptr = \
-    graph.OrientationConstraint.make(graph.Direction.Forward, two_d)
+acceptable_orientation_constraint_ptr = (
+    graph.OrientationConstraint.make([1, 2, 3]))
+direction_constraint_ptr = (
+    graph.OrientationConstraint.make(graph.Direction.Forward, two_d))
 
 
 def test_orientation_constraint():
@@ -208,10 +208,10 @@ def test_orientation_constraint():
     assert orientation_constraint.apply(three_d, two_d)
     assert orientation_constraint.clone(orientation_constraint)
 
-    assert type(acceptable_orientation_constraint_ptr) \
-        == graph.OrientationConstraintPtr
-    assert type(direction_constraint_ptr) \
-        == graph.OrientationConstraintPtr
+    assert (type(acceptable_orientation_constraint_ptr)
+            == graph.OrientationConstraintPtr)
+    assert (type(direction_constraint_ptr)
+            == graph.OrientationConstraintPtr)
 
 
 # NODE ========================================================================

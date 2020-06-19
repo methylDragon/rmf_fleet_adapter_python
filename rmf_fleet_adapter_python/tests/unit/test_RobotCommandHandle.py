@@ -25,20 +25,18 @@ class TestHandle(adpt.RobotCommandHandle):
 
 def test_dynamic_attr():
     test_obj = TestHandle()
-    assert test_obj.test_member == "rawr", \
-        "Dynamic assignment on init failing!"
+    assert test_obj.test_member == "rawr", (
+        "Dynamic assignment on init failing!")
 
     test_obj.newer_member = "rer"
-    assert test_obj.newer_member == "rer", \
-        "Dynamic assignment failing!"
+    assert test_obj.newer_member == "rer", "Dynamic assignment failing!"
 
     test_obj.test_func = lambda x: x
-    assert test_obj.test_func(5) == 5, \
-        "Dynamic function assignment failing!"
+    assert test_obj.test_func(5) == 5, "Dynamic function assignment failing!"
 
     test_obj_new = TestHandle()
-    assert not hasattr(test_obj_new, "test_func"), \
-        "Changing instance attributes changes class attributes!"
+    assert not hasattr(test_obj_new, "test_func"), (
+        "Changing instance attributes changes class attributes!")
 
 
 def test_python_side_methods(capsys):
@@ -46,13 +44,13 @@ def test_python_side_methods(capsys):
 
     test_obj.follow_new_path("", lambda: print("follow callback works!"))
     captured = capsys.readouterr()
-    assert captured.out == \
-        "rawr\nfollow callback works!\n", "Method call failed"
+    assert captured.out == (
+        "rawr\nfollow callback works!\n", "Method call failed")
 
     test_obj.dock("dock_rawr", lambda: print("dock callback works!"))
     captured = capsys.readouterr()
-    assert captured.out == \
-        "dock_rawr\ndock callback works!\n", "Method argument pass failed"
+    assert captured.out == (
+        "dock_rawr\ndock callback works!\n", "Method argument pass failed")
 
 
 def test_cpp_side_methods(capsys):
@@ -76,13 +74,12 @@ def test_cpp_side_methods(capsys):
                          "dock_rawr",
                          lambda: print("dock callback works!"))
     captured = capsys.readouterr()
-    assert captured.out == \
-        "dock_rawr\ndock callback works!\n", "cpp argument pass failed"
+    assert captured.out == (
+        "dock_rawr\ndock callback works!\n", "cpp argument pass failed")
 
     test_obj.dock = lambda s, f: print("overridden")
     adpt.test_shared_ptr(test_obj,
                          "",
                          lambda: print("not overridden"))
     captured = capsys.readouterr()
-    assert captured.out == \
-        "overridden\n", "Python method override failed"
+    assert captured.out == "overridden\n", "Python method override failed"
