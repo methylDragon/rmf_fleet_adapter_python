@@ -4,7 +4,6 @@ Python bindings for the fleet adapters for [rmf_core](https://github.com/osrf/rm
 Specifically:
 
 - [rmf_fleet_adapter](https://github.com/osrf/rmf_core/tree/develop/rmf_fleet_adapter)
-- [rmf_mock_adapter](https://github.com/osrf/rmf_mock_adapter)
 
 
 
@@ -17,7 +16,7 @@ Specifically:
 
 ## Installation
 
-- Place the `pybind_ament`, `rmf_mock_adapter_python` and `rmf_fleet_adapter_python` packages in your ROS2 workspace, and run `colcon build` as per normal, remembering to source the workspace.
+- Place the `pybind_ament` and `rmf_fleet_adapter_python` packages in your ROS2 workspace, and run `colcon build` as per normal, remembering to source the workspace.
 - The bindings will then be available as importable `Python3` packages!
 
 Do read the individual `README.md` files in each of the relevant packages for writeups on using the packages.
