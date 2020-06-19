@@ -311,13 +311,6 @@ $ colcon test --packages-select rmf_fleet_adapter_python --event-handlers consol
 
 
 
-### Missing Implementations
-
-- Unfortunately, since there is no way to instantiate `VelocityConstraint` pointers yet, you cannot pass them into Node` objects yet.
-  - `VelocityConstraint::clone` is not bound. And overriding it in Python doesn't expose the underlying pointer.
-
-
-
 ### Update Handles Should NOT be Directly Instantiated (Segfault risk!)
 
 - The `RobotUpdateHandle` and `FleetUpdateHandle` classes must **only be instantiated via their factory methods**! (Their init members have been disabled as a result.)

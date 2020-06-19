@@ -65,20 +65,20 @@ Some of these bindings allow you to **override virtual methods that would normal
 
 There are enough functionalities bound to implement your own fleet adapters to communicate with the rest of the `rmf_core` systems in the ROS2 graph. Allowing you to:
 
-- Adapter/MockAdapter: **Communicate with rmf_core by adding fleets or requesting deliveries**
-- RobotCommandHandle: **Specify custom robot command handles** that can take commands from the `rmf_core` packages and implement or execute the following robot behaviors:
+- `Adapter/MockAdapter`: **Communicate with rmf_core by adding fleets or requesting deliveries**
+- `RobotCommandHandle`: **Specify custom robot command handles** that can take commands from the `rmf_core` packages and implement or execute the following robot behaviors:
   - Docking
   - Path assignment
   - Starting
   - Stopping
   - RobotUpdateHandle: **Update robot statuses** 
-- Executor: **Implement new event handlers** for:
+- `Executor`: **Implement new event handlers** for:
   - Docking
   - Door operation
   - Lift door operation
   - Lift moving
-- Graph: **Specify map geometries as they relate to waypoints and lanes**
-- VehicleTraits: **Specify robot vehicle traits**, including:
+- `Graph`: **Specify map geometries as they relate to waypoints and lanes**
+- `VehicleTraits`: **Specify robot vehicle traits**, including:
   - Footprint
   - Kinematic limits
 
