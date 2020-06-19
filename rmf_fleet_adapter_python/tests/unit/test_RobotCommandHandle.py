@@ -44,13 +44,13 @@ def test_python_side_methods(capsys):
 
     test_obj.follow_new_path("", lambda: print("follow callback works!"))
     captured = capsys.readouterr()
-    assert captured.out == (
-        "rawr\nfollow callback works!\n", "Method call failed")
+    assert captured.out == "rawr\nfollow callback works!\n", (
+        "Method call failed")
 
     test_obj.dock("dock_rawr", lambda: print("dock callback works!"))
     captured = capsys.readouterr()
-    assert captured.out == (
-        "dock_rawr\ndock callback works!\n", "Method argument pass failed")
+    assert captured.out == "dock_rawr\ndock callback works!\n", (
+        "Method argument pass failed")
 
 
 def test_cpp_side_methods(capsys):
@@ -74,8 +74,8 @@ def test_cpp_side_methods(capsys):
                          "dock_rawr",
                          lambda: print("dock callback works!"))
     captured = capsys.readouterr()
-    assert captured.out == (
-        "dock_rawr\ndock callback works!\n", "cpp argument pass failed")
+    assert captured.out == "dock_rawr\ndock callback works!\n", (
+        "cpp argument pass failed")
 
     test_obj.dock = lambda s, f: print("overridden")
     adpt.test_shared_ptr(test_obj,
