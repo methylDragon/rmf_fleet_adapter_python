@@ -100,10 +100,10 @@ void bind_lane(py::module &m) {
           py::overload_cast<std::string>(&Lane::LiftMove::lift_name))
       .def_property(
           "destination_floor",
-          py::overload_cast<> \
-            (&Lane::LiftMove::destination_floor, py::const_),
-          py::overload_cast<std::string> \
-            (&Lane::LiftMove::destination_floor))
+          py::overload_cast<>(
+              &Lane::LiftMove::destination_floor, py::const_),
+          py::overload_cast<std::string>(
+              &Lane::LiftMove::destination_floor))
       .def_property(
           "duration",
           py::overload_cast<>(&Lane::LiftMove::duration, py::const_),
@@ -129,11 +129,11 @@ void bind_lane(py::module &m) {
       .def("door_close_execute",
            py::overload_cast<const Lane::DoorClose&>(&Lane::Executor::execute))
       .def("lift_door_open_execute",
-           py::overload_cast<const Lane::LiftDoorOpen&> \
-               (&Lane::Executor::execute))
+           py::overload_cast<const Lane::LiftDoorOpen&>(
+               &Lane::Executor::execute))
       .def("lift_door_close_execute",
-           py::overload_cast<const Lane::LiftDoorClose&> \
-               (&Lane::Executor::execute))
+           py::overload_cast<const Lane::LiftDoorClose&>(
+               &Lane::Executor::execute))
       .def("lift_move_execute",
            py::overload_cast<const Lane::LiftMove&>(&Lane::Executor::execute))
       .def("dock_execute",
@@ -174,13 +174,13 @@ void bind_lane(py::module &m) {
                     rmf_utils::clone_ptr<Graph::OrientationConstraint>>(),
            py::arg("waypoint_index"),
            py::arg("event") = (rmf_utils::clone_ptr<Lane::Event>) nullptr,
-           py::arg("orientation") = \
+           py::arg("orientation") =
               (rmf_utils::clone_ptr<Graph::OrientationConstraint>) nullptr
           )
       .def(py::init<std::size_t,
                     rmf_utils::clone_ptr<Graph::OrientationConstraint> >(),
            py::arg("waypoint_index"),
-           py::arg("orientation") = \
+           py::arg("orientation") =
               (rmf_utils::clone_ptr<Graph::OrientationConstraint>) nullptr
           )
       .def_property_readonly("waypoint_index", &Lane::Node::waypoint_index)

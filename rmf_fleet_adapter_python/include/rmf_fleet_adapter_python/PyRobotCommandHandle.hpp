@@ -34,7 +34,7 @@ public:
   // Constructor
   using rmf_fleet_adapter::agv::RobotCommandHandle::RobotCommandHandle;
 
-  using ArrivalEstimator = \
+  using ArrivalEstimator =
       std::function<void(std::size_t path_index,
                          rmf_traffic::Duration remaining_time)>;
 

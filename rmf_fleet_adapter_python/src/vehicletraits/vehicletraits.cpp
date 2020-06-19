@@ -9,6 +9,9 @@ namespace py = pybind11;
 using VehicleTraits = rmf_traffic::agv::VehicleTraits;
 using Profile = rmf_traffic::Profile;
 
+using ConstFinalConvexShapePtr =
+    rmf_traffic::geometry::ConstFinalConvexShapePtr;
+
 void bind_vehicletraits(py::module &m) {
   auto m_vehicletraits = m.def_submodule("vehicletraits");
 
@@ -49,21 +52,19 @@ void bind_vehicletraits(py::module &m) {
 
   // PROFILE ===================================================================
   py::class_<Profile>(m_vehicletraits, "Profile")
-      .def(py::init<rmf_traffic::geometry::ConstFinalConvexShapePtr,
-                    rmf_traffic::geometry::ConstFinalConvexShapePtr>(),
+      .def(py::init<ConstFinalConvexShapePtr,
+                    ConstFinalConvexShapePtr>(),
            py::arg("footprint"),
-           py::arg("vicinity") = \
-              (rmf_traffic::geometry::ConstFinalConvexShapePtr) nullptr)
+           py::arg("vicinity") = (
+               ConstFinalConvexShapePtr) nullptr)
       .def_property("footprint",
                     py::overload_cast<>(&Profile::footprint, py::const_),
-                    py::overload_cast \
-                      <rmf_traffic::geometry::ConstFinalConvexShapePtr> \
-                        (&Profile::footprint))
+                    py::overload_cast<ConstFinalConvexShapePtr>(
+                        &Profile::footprint))
       .def_property("vicinity",
                     py::overload_cast<>(&Profile::vicinity, py::const_),
-                    py::overload_cast \
-                      <rmf_traffic::geometry::ConstFinalConvexShapePtr> \
-                        (&Profile::vicinity));
+                    py::overload_cast<ConstFinalConvexShapePtr>(
+                        &Profile::vicinity));
 
   // VEHICLETRAITS =============================================================
   py::class_<VehicleTraits>(m_vehicletraits, "VehicleTraits")

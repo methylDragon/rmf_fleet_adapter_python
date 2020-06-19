@@ -64,13 +64,13 @@ void bind_graph(py::module &m) {
                                       py::dynamic_attr())
       .def(py::init<>())
       .def_static("make",
-                  py::overload_cast<std::vector<double> > \
-                      (&OrientationConstraint::make),
+                  py::overload_cast<std::vector<double> >(
+                      &OrientationConstraint::make),
                       "Create an acceptable orientation constraint pointer.")
       .def_static("make",
                   py::overload_cast<OrientationConstraint::Direction,
-                                    const Eigen::Vector2d&> \
-                      (&OrientationConstraint::make),
+                                    const Eigen::Vector2d&>(
+                      &OrientationConstraint::make),
                       "Create a direction constraint pointer.")
       .def("apply",
            &OrientationConstraint::apply)
@@ -78,8 +78,8 @@ void bind_graph(py::module &m) {
            &OrientationConstraint::clone);
 
   // clone_ptr
-  py::class_<rmf_utils::clone_ptr<OrientationConstraint> > \
-    (m_graph, "OrientationConstraintPtr")
+  py::class_<rmf_utils::clone_ptr<OrientationConstraint> >(
+    m_graph, "OrientationConstraintPtr")
       .def(py::init<>());
       // .def(py::init<OrientationConstraint::Direction,
       //               std::vector<double> >());
@@ -87,8 +87,8 @@ void bind_graph(py::module &m) {
       // as well as pointed to member methods
 
   // Internal Direction enum class
-  py::enum_<OrientationConstraint::Direction> \
-    (m_graph, "Direction")
+  py::enum_<OrientationConstraint::Direction>(
+    m_graph, "Direction")
       .value("Forward", OrientationConstraint::Direction::Forward)
       .value("Backward", OrientationConstraint::Direction::Backward);
       // No export_value as the enum is an enum class (scoped enum)
@@ -113,11 +113,11 @@ void bind_graph(py::module &m) {
       .def("get_waypoint", py::overload_cast<std::size_t>(
           &Graph::get_waypoint, py::const_),
           py::return_value_policy::reference_internal)
-      .def("find_waypoint", py::overload_cast<const std::string&> \
-          (&Graph::find_waypoint),
+      .def("find_waypoint", py::overload_cast<const std::string&>(
+          &Graph::find_waypoint),
           py::return_value_policy::reference_internal)
-      .def("find_waypoint", py::overload_cast<const std::string&> \
-          (&Graph::find_waypoint, py::const_),
+      .def("find_waypoint", py::overload_cast<const std::string&>(
+          &Graph::find_waypoint, py::const_),
           py::return_value_policy::reference_internal)
       .def_property_readonly("num_waypoints", &Graph::num_waypoints)
 

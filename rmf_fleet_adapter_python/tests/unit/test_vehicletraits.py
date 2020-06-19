@@ -69,15 +69,15 @@ profile_with_vicinity = traits.Profile(big_circle, circle)
 
 def test_profile():
     # Check getters
-    assert profile.footprint.characteristic_length \
-        == circle.characteristic_length
-    assert profile.vicinity.characteristic_length \
-        == circle.characteristic_length
+    assert (profile.footprint.characteristic_length
+            == circle.characteristic_length)
+    assert (profile.vicinity.characteristic_length
+            == circle.characteristic_length)
 
-    assert profile_with_vicinity.footprint.characteristic_length == \
-        big_circle.characteristic_length
-    assert profile_with_vicinity.vicinity.characteristic_length == \
-        circle.characteristic_length
+    assert (profile_with_vicinity.footprint.characteristic_length
+            == big_circle.characteristic_length)
+    assert (profile_with_vicinity.vicinity.characteristic_length
+            == circle.characteristic_length)
 
     # Check setters
     final_circle = geometry.make_final_convex_circle(20)
@@ -86,25 +86,25 @@ def test_profile():
 
     # Check tha vicinity is overwritten
     # This particular profile was passed a nullptr for vicinity!
-    assert profile.footprint.characteristic_length == \
-        final_circle.characteristic_length
-    assert profile.vicinity.characteristic_length == \
-        final_circle.characteristic_length
+    assert (profile.footprint.characteristic_length
+            == final_circle.characteristic_length)
+    assert (profile.vicinity.characteristic_length
+            == final_circle.characteristic_length)
 
     # Check if setting vicinity decouples the two
     profile.vicinity = circle
     profile.footprint = big_circle
 
-    assert profile.footprint.characteristic_length == \
-        big_circle.characteristic_length
-    assert profile.vicinity.characteristic_length == \
-        circle.characteristic_length
+    assert (profile.footprint.characteristic_length
+            == big_circle.characteristic_length)
+    assert (profile.vicinity.characteristic_length
+            == circle.characteristic_length)
 
     # Check that vicinity is not overwritten
-    assert profile_with_vicinity.footprint.characteristic_length == \
-        final_circle.characteristic_length
-    assert profile_with_vicinity.vicinity.characteristic_length == \
-        circle.characteristic_length
+    assert (profile_with_vicinity.footprint.characteristic_length
+            == final_circle.characteristic_length)
+    assert (profile_with_vicinity.vicinity.characteristic_length
+            == circle.characteristic_length)
 
 
 # VEHICLETRAITS ===============================================================

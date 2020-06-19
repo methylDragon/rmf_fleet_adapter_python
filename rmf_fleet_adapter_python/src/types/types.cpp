@@ -48,20 +48,20 @@ void bind_types(py::module &m) {
   py::class_<rmf_utils::optional<std::size_t> >(m_type, "OptionalULong")
       .def_property_readonly("has_value",
                              &rmf_utils::optional<std::size_t>::has_value)
-      .def_property_readonly("value", py::overload_cast<> \
-          (&rmf_utils::optional<std::size_t>::value));
+      .def_property_readonly("value", py::overload_cast<>(
+          &rmf_utils::optional<std::size_t>::value));
 
   py::class_<rmf_utils::optional<double> >(m_type, "OptionalDouble")
       .def_property_readonly("has_value",
                              &rmf_utils::optional<double>::has_value)
-      .def_property_readonly("value", py::overload_cast<> \
-          (&rmf_utils::optional<double>::value));
+      .def_property_readonly("value", py::overload_cast<>(
+          &rmf_utils::optional<double>::value));
 
   py::class_<rmf_utils::optional<Eigen::Vector2d> >(m_type, "OptionalVector2D")
       .def_property_readonly("has_value",
                              &rmf_utils::optional<Eigen::Vector2d>::has_value)
-      .def_property_readonly("value", py::overload_cast<> \
-          (&rmf_utils::optional<Eigen::Vector2d>::value));
+      .def_property_readonly("value", py::overload_cast<>(
+          &rmf_utils::optional<Eigen::Vector2d>::value));
 
   py::class_<rmf_utils::nullopt_t>(m_type, "NullOptional");
 

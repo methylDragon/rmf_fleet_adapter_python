@@ -14,7 +14,8 @@ void bind_shapes(py::module &m) {
 
   // SHAPES ====================================================================
   py::class_<geometry::FinalShape, PyFinalShape,
-             std::shared_ptr<geometry::FinalShape> >(m_geometry, "FinalShape")
+             std::shared_ptr<geometry::FinalShape> >(
+                 m_geometry, "FinalShape")
       .def(py::init<>())
       .def_property_readonly("source",
                              &geometry::FinalShape::source,
@@ -26,8 +27,8 @@ void bind_shapes(py::module &m) {
   py::class_<geometry::FinalConvexShape,
              geometry::FinalShape,
              PyFinalConvexShape,
-             std::shared_ptr<geometry::FinalConvexShape> > \
-    (m_geometry, "FinalConvexShape")
+             std::shared_ptr<geometry::FinalConvexShape> >(
+                 m_geometry, "FinalConvexShape")
       .def(py::init<>())
       .def_property_readonly("source",
                              &geometry::FinalShape::source,
@@ -48,7 +49,7 @@ void bind_shapes(py::module &m) {
   // SHAPE FACTORIES ===========================================================
   m_geometry.def("make_final_convex_circle",
                  [](double radius){
-      return std::make_shared<geometry::FinalConvexShape> \
-          (geometry::Circle(std::forward<double>(radius)).finalize_convex());
+      return std::make_shared<geometry::FinalConvexShape>(
+          geometry::Circle(std::forward<double>(radius)).finalize_convex());
                  });
 }

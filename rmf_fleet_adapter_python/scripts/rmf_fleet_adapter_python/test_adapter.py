@@ -350,11 +350,8 @@ class MockRobotCommand(adpt.RobotCommandHandle):
             test_delay = (datetime.timedelta(milliseconds=750)
                           * self.current_waypoint_target)
 
-            now = datetime.datetime.fromtimestamp(self.node
-                                                  .get_clock()
-                                                  .now()
-                                                  .nanoseconds
-                                                  / 1e9)
+            node_time = self.node.get_clock().now().nanoseconds / 1e9
+            now = datetime.datetime.fromtimestamp(node_time)
 
             delayed_arrival_time = waypoint.time + test_delay
 
@@ -545,6 +542,8 @@ def main():
     assert at_least_one_incomplete
 
     # Uncomment this to send a second request.
+
+    # TODO(CH3):
     # But note! The TaskManager has to be fixed first to allow task pre-emption
     # print("# SENDING NEW REQUEST ##########################################")
     # request = adpt.type.CPPDeliveryMsg("test_delivery_two",
