@@ -9,8 +9,6 @@
 
 namespace py = pybind11;
 
-// void bind_types(py::module &);
-
 using Plan = rmf_traffic::agv::Plan;
 using Planner = rmf_traffic::agv::Planner;
 
@@ -39,23 +37,10 @@ Start make_start(std::chrono::time_point<std::chrono::system_clock,
 }
 
 void bind_plan(py::module &m) {
-  // bind_types(m);  // Bound in parent module!
   auto m_plan = m.def_submodule("plan");
 
   // PLANNER ===================================================================
   py::class_<Start>(m_plan, "Start")
-      // .def(py::init<rmf_traffic::Time,
-      //               std::size_t,
-      //               double,
-      //               rmf_utils::optional<Eigen::Vector2d>,
-      //               rmf_utils::optional<std::size_t> >(),
-      //      py::arg("initial_time"),
-      //      py::arg("initial_waypoint"),
-      //      py::arg("initial_orientation"),
-      //      py::arg("location") = rmf_utils::optional<Eigen::Vector2d> \
-      //          (rmf_utils::nullopt),
-      //      py::arg("initial_lane") = rmf_utils::optional<std::size_t> \
-      //          (rmf_utils::nullopt))
       .def(py::init(&make_start),
            py::arg("initial_time"),
            py::arg("initial_waypoint"),
