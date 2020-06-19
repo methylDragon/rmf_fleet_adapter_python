@@ -18,19 +18,27 @@ using Goal = Planner::Goal;
 using Options = Planner::Options;
 using Configuration = Planner::Configuration;
 using Result = Planner::Result;
+
 using TimePoint = std::chrono::time_point<std::chrono::system_clock,
                                           std::chrono::nanoseconds>;
 
-
+// NOTE(CH3):
+// Factory method for Start() to allow passing in of system_clock::time_points,
+// as Start objects are constructed using steady_clock::time_points
+//
+// We use system_clock::time_points in the bindings to simplify the Pythonside
+// types (so it casts to datetime.datetime instead of datetime.timedelta)
 Start make_start(TimePoint initial_time,
                  std::size_t initial_waypoint,
                  double initial_orientation,
                  rmf_utils::optional<Eigen::Vector2d> location,
                  rmf_utils::optional<std::size_t> initial_lane)
 {
-  return Start(std::chrono::time_point<std::chrono::steady_clock,
-                                       std::chrono::nanoseconds>(
-                                           initial_time.time_since_epoch()),
+  using TimePointSteadyClock =
+      std::chrono::time_point<std::chrono::steady_clock,
+                              std::chrono::nanoseconds>;
+
+  return Start(TimePointSteadyClock(initial_time.time_since_epoch()),
                initial_waypoint,
                initial_orientation,
                location,
